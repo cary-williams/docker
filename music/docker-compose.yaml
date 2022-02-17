@@ -1,0 +1,47 @@
+version: '2'
+services:
+  deemix: #Allows to download music from deezer
+    image: registry.gitlab.com/bockiii/deemix-docker
+    container_name: Deemix
+    volumes:
+      - /music/downloads:/downloads
+      - /srv/config/deemix:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - ARL= #Get ARL from Deezer account
+      - UMASK_SET=022
+      - DEEZUI=true
+      - REVERSEPROXY=true
+    ports:
+      - 6595:6595
+    restart: unless-stopped
+        
+  navidrome: #Music Player
+    container_name: navidrome
+    volumes:
+      - /music/music:/music
+      - /srv/config/navidrome:/data
+    ports:
+      - 4533:4533
+    environment:
+      ND_LOGLEVEL: info
+      ND_SCANSCHEDULE: 1h
+      ND_SESSIONTIMEOUT: 24h
+      ND_BASEURL: ""
+    image: deluan/navidrome:latest
+    restart: unless-stopped        
+            
+  filebrowser: #For editing, moving and controling music files on a headless LXC.
+    image:  hurlenko/filebrowser:latest
+    container_name: filebrowser
+    ports:
+      - 8080:8081
+    volumes:
+      - /music:/data
+      - /srv/config/filebrowser:/config
+    environment:
+      - FB_BASEURL=/filebrowser
+
+    restart: unless-stopped
+

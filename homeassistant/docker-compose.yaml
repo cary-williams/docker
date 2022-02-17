@@ -1,0 +1,17 @@
+version: '3'
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - /srv/config/homeassistant:/config
+      - /etc/localtime:/etc/localtime:ro
+      - /dev/serial/by-id:/dev/serial/by-id #allows connection to USB Zigbee hub
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0 #mounts USB Zigbee hub
+      - /dev/ttyUSB1:/dev/ttyUSB1
+    restart: unless-stopped
+    environment:
+      - TZ=America/Chicago
+    privileged: true
+    network_mode: host
